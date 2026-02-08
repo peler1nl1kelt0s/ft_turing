@@ -24,6 +24,10 @@ class Tape:
 			self.head -= 1
 
 class TuringMachine:
+	CONTINUE = 2
+	HALT = 1
+	ERROR = 0
+
 	def __init__(self, jsonfile, input):
 		self.name = jsonfile["name"]
 		self.alphabet = list(jsonfile["alphabet"])
@@ -36,6 +40,11 @@ class TuringMachine:
 		self.input = input
 		self.tape = Tape(self.input, self.blank)
 		self.file = open("results.txt", "w")
+		self.current_char = ""
+		self.next_state = self.current_state
+		self.current_write = ""
+		self.current_action = ""
+		self.size = 22
 
 	def print_states(self):
 		count = 39 - int(len(self.name) / 2)
@@ -56,27 +65,36 @@ class TuringMachine:
 					f"({state}, {r['read']}) -> "
 					f"({r['to_state']}, {r['write']}, {r['action']})\n"
 				)
-		self.file.write("*" * 80)
+		self.file.write("*" * 80 + "\n")
+
+	def print_current_state(self):
+		self.file.write(
+			"(" + self.current_state + ", " +
+			self.current_char + ") -> (" + self.next_state + ", " +
+			self.current_write + ", " + self.current_action + ")\n"
+			)
 
 	def step(self):
-		if self.current_state in self.finals_state:
+		if self.next_state in self.finals_state:
 			print("Program finale geldi")
-			self.file.close()
 			return 1 
-		
 		# !!!!!!! HATA DURUMLARI KONTROLLERINI DAHA SONRASINDA PARSE KISMINDA 
 		# YAP KI DAHA SONRASINDA TEK TEK KONTROL ETME !!!!!!!!!!
 
-		current_char = self.tape.read()
-		if self.current_state not in self.transitions:
+		self.current_char = self.tape.read()
+		if self.next_state not in self.transitions:
 			print("state, transitions icerisinde bulunamadi")
 			return 0
 
-		for t in self.transitions[self.current_state]:
-			if current_char == t["read"]:
+		for t in self.transitions[self.next_state]:
+			if self.current_char == t["read"]:
+				self.current_write = t["write"]
+				self.current_action = t["action"]
+
+				self.current_state = self.next_state
+				self.next_state = t["to_state"]
 				self.tape.write(t["write"])
 				self.tape.action(t["action"])
-				self.current_state = t["to_state"]
 				return 2
 		return 0
 
@@ -87,10 +105,10 @@ class TuringMachine:
 			code = self.step()
 			steps += 1
 			if code == 2:
+				self.print_current_state()
 				continue
 			elif code == 1:
 				print("HALT: işlem başarıyla tamamlandı")
-				print(self.tape.tape)
 				return 1
 			else:
 				print("ERROR: geçersiz durum")
