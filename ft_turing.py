@@ -28,8 +28,6 @@ class Tape:
             self.head += 1
         elif action == "LEFT":
             self.head -= 1
-        elif action == "STAY":
-            pass
         else:
             raise ValueError(f"Invalid action: {action}")
 
@@ -102,9 +100,6 @@ class TuringMachine:
         if self.current_state in self.final_states:
             return self.HALT
 
-        if self.current_state not in self.transitions:
-            return self.ERROR
-
         read_char = self.tape.read()
 
         for t in self.transitions[self.current_state]:
@@ -143,9 +138,13 @@ class TuringMachine:
 
         self.file.close()
         return 0
-
-    def parse(self):
-        pass
+    def parse(self): 
+        if self.initial_state not in self.transitions:
+            raise ValueError(f"Invalid initial state: {self.current_state}")
+        # alphabet transitions icerisinde hepsi dogru mu farkli var mi + blank
+        # actionlar sadece left ve right mi
+        # states ve transitions stateleri ayni mi
+        # finals kismindakiler dogru state mi
 
 def read_json(jsonfile):
     try:
