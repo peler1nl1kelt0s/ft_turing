@@ -20,3 +20,5 @@ def run(machine : TuringMachine):
 		return loop(current_state=transition.get("to_state"),tape=new_tape, head=new_head)
 
 	loop(current_state=machine.initial, tape=machine.tape,head=0)
+
+	
