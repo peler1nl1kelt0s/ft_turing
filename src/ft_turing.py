@@ -15,10 +15,8 @@ def run(machine : TuringMachine):
 		transition = get_transition(state=current_state, read_char=read_char)
 		new_tape = tape.copy()
 		new_tape[head] = transition.get("write")
-		new_head = head -1 if transition.get("action") == "LEFT" else head + 1
+		new_head = head + 1 if transition.get("action") == "RIGHT" else head - 1
 		print(tape, f"({current_state}, {transition.get("read")}) -> ({transition.get("to_state")}, {transition.get("write")}, {transition.get("action")})")
 		return loop(current_state=transition.get("to_state"),tape=new_tape, head=new_head)
 
 	loop(current_state=machine.initial, tape=machine.tape,head=0)
-
-	
