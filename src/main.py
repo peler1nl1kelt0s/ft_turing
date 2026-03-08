@@ -1,6 +1,6 @@
 import sys
 import json
-from parse import import_json
+from parse import import_json, parse
 from ft_turing import run
 
 def main():
@@ -15,6 +15,8 @@ def main():
 		print("Error: when reading json file. Please give valid json")
 		exit(1)
 	machine = import_json(json_arg=json_arg, input_string=sys.argv[2])
+	if parse(machine=machine) == 0:
+		return 0
 	run(machine=machine)
 
 if __name__ == "__main__":
