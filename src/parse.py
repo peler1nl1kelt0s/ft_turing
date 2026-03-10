@@ -1,5 +1,9 @@
 from dataclass import TuringMachine
 
+
+# TODO "IndexError: list assignment index out of range" hatasi aliyorum "111-111" inputu girdigim zaman. Sebebi de surekli olarak saga gitti icin indexi asiyor.
+# TODO sonsuz dongu kontrolu eklenecek
+
 FINAL = "FINAL"
 
 def import_json(json_arg: dict, input_string: str) -> TuringMachine:
@@ -17,24 +21,24 @@ def import_json(json_arg: dict, input_string: str) -> TuringMachine:
     except Exception:
         raise ValueError("Error when parsing json file")
 
-
 def get_state(machine: TuringMachine, state: str):
     try:
         if state in machine.finals:
             return FINAL
         elif machine.transitions.get(state):
-            return machine.transitions.get(state)
+            return machine.transitions.get(state, [])
+        else:
+            raise ValueError("Error: states are invalid")
     except Exception:
         raise ValueError("Error: states are invalid")
 
-
 def parse_input(machine : TuringMachine):
-	if not list(map(lambda alp: alp in machine.tape)):
-		raise ValueError("Error: input is invalid")
+    error = list(filter(lambda tape: tape not in machine.alphabet, machine.tape))
+    if error:
+        raise ValueError(f"Error: input, {error} is invalid")
 
 def parse_states(machine: TuringMachine):
     return list(map(lambda s: get_state(machine, s), machine.states))
-
 
 def parse_transition(machine: TuringMachine, state: str, read_char: str):
     if read_char not in machine.alphabet:
@@ -62,7 +66,19 @@ def parse_transition(machine: TuringMachine, state: str, read_char: str):
     
     return transition
 
-
+def parse_states_control(machine : TuringMachine):
+    list(
+        map(
+            lambda state: list(
+                map(
+                    lambda t: parse_transition(machine, state, t["read"]),
+                    get_state(machine=machine, state=state)
+                )
+            ),
+            machine.transitions.keys()
+        )
+    )
+        
 def parse_halt(machine: TuringMachine):
     if not machine.finals:
         raise ValueError("Error: no final states defined")
@@ -71,20 +87,12 @@ def parse_halt(machine: TuringMachine):
 
 def parse(machine: TuringMachine):
     try:
+        get_state(machine=machine, state=machine.initial)
         parse_states(machine=machine)
+        parse_states_control(machine=machine)
         parse_halt(machine=machine)
-        list(
-            map(
-                lambda state: list(
-                    map(
-                        lambda t: parse_transition(machine, state, t["read"]),
-                        machine.transitions.get(state, [])
-                    )
-                ),
-                machine.transitions.keys()
-            )
-        )
-    except ValueError as e:
+        parse_input(machine=machine)
+    except Exception as e:
         print(e)
         return 0
     return 1
