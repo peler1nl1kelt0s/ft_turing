@@ -2,7 +2,6 @@ import sys
 import json
 from parse import import_json, parse
 from ft_turing import run
-from print import print_initial_values
 def main():
 
 	if len(sys.argv) != 3:
@@ -17,7 +16,6 @@ def main():
 	machine = import_json(json_arg=json_arg, input_string=sys.argv[2])
 	if parse(machine=machine) == 0:
 		return 0
-	print_initial_values(machine=machine)
 	run(machine=machine)
 
 if __name__ == "__main__":

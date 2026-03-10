@@ -5,6 +5,7 @@ from dataclass import TuringMachine
 # TODO sonsuz dongu kontrolu eklenecek
 
 FINAL = "FINAL"
+BOUND = 20
 
 def import_json(json_arg: dict, input_string: str) -> TuringMachine:
     try:
@@ -16,7 +17,7 @@ def import_json(json_arg: dict, input_string: str) -> TuringMachine:
             states=list(json_arg.get("states")),
             finals=list(json_arg.get("finals")),
             transitions=dict(json_arg.get("transitions")),
-            tape=list(input_string),
+            tape=list(input_string.ljust(BOUND, json_arg.get("blank"))),
         )
     except Exception:
         raise ValueError("Error when parsing json file")
@@ -34,7 +35,7 @@ def get_state(machine: TuringMachine, state: str):
 
 def parse_input(machine : TuringMachine):
     error = list(filter(lambda tape: tape not in machine.alphabet, machine.tape))
-    if error:
+    if error or machine.tape:
         raise ValueError(f"Error: input, {error} is invalid")
 
 def parse_states(machine: TuringMachine):

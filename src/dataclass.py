@@ -11,5 +11,4 @@ class TuringMachine:
     transitions: dict
     tape : list
     head : int = 0
-    bound: int = 20
     

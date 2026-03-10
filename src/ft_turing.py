@@ -1,8 +1,8 @@
 from dataclass import TuringMachine
 from parse import get_state
-from print import print_tape
+from print import print_tape, print_initial_values
+
 def run(machine : TuringMachine):
-	
 	def get_transition(state : str, read_char : str) -> dict:
 		transition = get_state(machine=machine, state=state)
 		return next(filter(lambda t: t["read"] == read_char, transition), None)
@@ -10,7 +10,6 @@ def run(machine : TuringMachine):
 	def loop(current_state : str, tape : list, head : int):
 		try:
 			if current_state in machine.finals:
-				print(f"Halted! Final tape: {''.join(tape)}")
 				return tape
 			
 			read_char = tape[head] if 0 <= head < len(tape) else machine.blank
@@ -24,4 +23,5 @@ def run(machine : TuringMachine):
 			print(e)
 			exit(1)
 
+	print_initial_values(machine=machine)
 	loop(current_state=machine.initial, tape=machine.tape,head=0)
