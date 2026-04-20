@@ -35,7 +35,8 @@ def get_state(machine: TuringMachine, state: str):
 
 def parse_input(machine : TuringMachine):
     error = list(filter(lambda tape: tape not in machine.alphabet, machine.tape))
-    if error or machine.tape:
+    #TODO machine.tape null kontrolu yapilacak
+	if error :
         raise ValueError(f"Error: input, {error} is invalid")
 
 def parse_states(machine: TuringMachine):

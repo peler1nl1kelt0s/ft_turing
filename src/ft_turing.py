@@ -1,6 +1,10 @@
 from dataclass import TuringMachine
 from parse import get_state
-from print import print_tape, print_initial_values
+from print import print_tape, print_initial_values, print_help
+import sys
+import json
+from parse import import_json, parse
+import argparse
 
 def run(machine : TuringMachine):
 	def get_transition(state : str, read_char : str) -> dict:
@@ -25,3 +29,24 @@ def run(machine : TuringMachine):
 
 	print_initial_values(machine=machine)
 	loop(current_state=machine.initial, tape=machine.tape,head=0)
+
+def main():
+	parser = argparse.ArgumentParser()
+	parser.add_argument("jsonfile",help="json description of the machine")
+	parser.add_argument("input", help="input of the machine")
+	args = parser.parse_args()
+	if len(sys.argv) != 3:
+		sys.exit(1)
+	try:
+		file = open(sys.argv[1])
+		json_arg = json.loads(file.read())
+	except:
+		print("Error: when reading json file. Please give valid json")
+		exit(1)
+	machine = import_json(json_arg=json_arg, input_string=sys.argv[2])
+	if parse(machine=machine) == 0:
+		return 0
+	run(machine=machine)
+
+if __name__ == "__main__":
+	main()

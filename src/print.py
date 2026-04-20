@@ -39,3 +39,12 @@ def print_tape(tape, current_state, read, to_state, write, action, head):
         enumerate(tape)
     ))
     print(f"[{visual_tape}] ({current_state}, {read}) -> ({to_state}, {write}, {action})")
+
+
+def print_help():
+	print("usage: ft_turing [-h] jsonfile input\n")
+	print("positional arguments:")
+	print("  jsonfile		json description of the machine\n")
+	print("  input			input of the machine\n")
+	print("optional arguments:")
+	print("  -h, --help		show this help message and exi")
