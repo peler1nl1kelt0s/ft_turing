@@ -3,11 +3,12 @@ import json
 from parse import import_json, parse
 import argparse
 from ft_turing import run
-
+from visualize import visualize
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("jsonfile",help="json description of the machine")
 	parser.add_argument("input", help="input of the machine")
+	parser.add_argument("--complexity", help="input of the machine")
 	args = parser.parse_args()
 	if len(sys.argv) != 3:
 		sys.exit(1)
@@ -21,6 +22,8 @@ def main():
 	if parse(machine=machine) == 0:
 		return 0
 	run(machine=machine)
+	if (args.complexity):
+		visualize()
 
 if __name__ == "__main__":
 	main()

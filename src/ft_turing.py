@@ -3,8 +3,6 @@ from parse import get_state
 from print import print_tape, print_initial_values
 
 def run(machine : TuringMachine):
-	count = 0
-
 	def get_transition(state : str, read_char : str) -> dict:
 		transition = get_state(machine=machine, state=state)
 		return next(filter(lambda t: t["read"] == read_char, transition), None)
@@ -22,7 +20,7 @@ def run(machine : TuringMachine):
 				new_tape = new_tape + [machine.blank]
 				count += 1
 				if count == 10:
-					raise ValueError("Error loop is detected")
+					raise ValueError("Error: loop is detected")
 			print_tape(
 				tape=tape, 
 				current_state=current_state, 
@@ -41,4 +39,4 @@ def run(machine : TuringMachine):
 			print(e)
 			exit(1)
 	print_initial_values(machine=machine)
-	loop(current_state=machine.initial, tape=machine.tape,head=0, count=count)
+	loop(current_state=machine.initial, tape=machine.tape,head=0, count=0)
