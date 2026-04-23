@@ -1,52 +1,44 @@
 from dataclass import TuringMachine
 from parse import get_state
-from print import print_tape, print_initial_values, print_help
-import sys
-import json
-from parse import import_json, parse
-import argparse
+from print import print_tape, print_initial_values
 
 def run(machine : TuringMachine):
+	count = 0
+
 	def get_transition(state : str, read_char : str) -> dict:
 		transition = get_state(machine=machine, state=state)
 		return next(filter(lambda t: t["read"] == read_char, transition), None)
 
-	def loop(current_state : str, tape : list, head : int):
+	def loop(current_state : str, tape : list, head : int, count : int):
 		try:
 			if current_state in machine.finals:
 				return tape
-			
 			read_char = tape[head] if 0 <= head < len(tape) else machine.blank
 			transition = get_transition(state=current_state, read_char=read_char)
 			new_tape = tape.copy()
 			new_tape[head] = transition.get("write")
 			new_head = head + 1 if transition.get("action") == "RIGHT" else head - 1
-			print_tape(tape=tape, current_state=current_state, read=transition.get("read"), to_state=transition.get("to_state"),write=transition.get("write"), action=transition.get("action"), head=head)
-			return loop(current_state=transition.get("to_state"),tape=new_tape, head=new_head)
+			if new_head >= len(machine.tape):
+				new_tape = new_tape + [machine.blank]
+				count += 1
+				if count == 10:
+					raise ValueError("Error loop is detected")
+			print_tape(
+				tape=tape, 
+				current_state=current_state, 
+				read=transition.get("read"), 
+				to_state=transition.get("to_state"),
+				write=transition.get("write"),
+				action=transition.get("action"),
+				head=head)
+			return loop(
+				current_state=transition.get("to_state"),
+				tape=new_tape, 
+				head=new_head,
+				count=count)
+
 		except Exception as e:
 			print(e)
 			exit(1)
-
 	print_initial_values(machine=machine)
-	loop(current_state=machine.initial, tape=machine.tape,head=0)
-
-def main():
-	parser = argparse.ArgumentParser()
-	parser.add_argument("jsonfile",help="json description of the machine")
-	parser.add_argument("input", help="input of the machine")
-	args = parser.parse_args()
-	if len(sys.argv) != 3:
-		sys.exit(1)
-	try:
-		file = open(sys.argv[1])
-		json_arg = json.loads(file.read())
-	except:
-		print("Error: when reading json file. Please give valid json")
-		exit(1)
-	machine = import_json(json_arg=json_arg, input_string=sys.argv[2])
-	if parse(machine=machine) == 0:
-		return 0
-	run(machine=machine)
-
-if __name__ == "__main__":
-	main()
+	loop(current_state=machine.initial, tape=machine.tape,head=0, count=count)

@@ -1,0 +1,2 @@
+FINAL = "FINAL"
+WIDTH = 80

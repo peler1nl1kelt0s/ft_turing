@@ -1,17 +1,17 @@
 from dataclass import TuringMachine
-
 import itertools
+from config import WIDTH
 
 def print_initial_values(machine):
-    width = 80
+    
     fmt_list = lambda lst: f"[ {', '.join(map(str, lst))} ]"
     
     box = [
-        "*" * width,
-        f"*{' ' * (width-2)}*",
-        f"* {machine.name:^{width-4}} *",
-        f"*{' ' * (width-2)}*",
-        "*" * width
+        "*" * WIDTH,
+        f"*{' ' * (WIDTH-2)}*",
+        f"* {machine.name:^{WIDTH-4}} *",
+        f"*{' ' * (WIDTH-2)}*",
+        "*" * WIDTH
     ]
     list(map(print, box))
 
@@ -31,20 +31,12 @@ def print_initial_values(machine):
         f"({t['state']}, {t['read']}) -> ({t['to_state']}, {t['write']}, {t['action']})"
     ), all_transitions))
 
-    print("*" * width)
+    print("*" * WIDTH)
 
 def print_tape(tape, current_state, read, to_state, write, action, head):
+    
     visual_tape = "".join(map(
         lambda x: f"<{x[1]}>" if x[0] == head else x[1], 
         enumerate(tape)
     ))
     print(f"[{visual_tape}] ({current_state}, {read}) -> ({to_state}, {write}, {action})")
-
-
-def print_help():
-	print("usage: ft_turing [-h] jsonfile input\n")
-	print("positional arguments:")
-	print("  jsonfile		json description of the machine\n")
-	print("  input			input of the machine\n")
-	print("optional arguments:")
-	print("  -h, --help		show this help message and exi")
